@@ -25,6 +25,6 @@ jobs:
       - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ProyectoEquipo3   # <-- tu nombre EXACTO del App Service
+          app-name: FuncionFco   # <-- tu nombre EXACTO del App Service
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
