@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo_mysql
+        coverage: none
+
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist
+
+    - name: Copy .env.example
+      run: cp .env.example .env
+
+    - name: Generate application key
+      run: php artisan key:generate
+
+    # 1️⃣ PRUEBAS UNITARIAS
+    - name: Run Laravel Tests
+      run: php artisan test
+
+    # 2️⃣ VALIDACIÓN DE ESTILO CON PHP PINT
+    - name: Check code style with Pint
+      run: vendor/bin/pint --test
+
+    # 3️⃣ ANALISIS ESTÁTICO CON PHP STAN + LARASTAN
+    - name: PHPStan Analysis
+      run: vendor/bin/phpstan analyse --memory-limit=1G

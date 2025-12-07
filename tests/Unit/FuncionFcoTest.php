@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\Services\FuncionFco;
+use Tests\TestCase;
 
 class FuncionFcoTest extends TestCase
 {
@@ -12,7 +12,7 @@ class FuncionFcoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->funcionFco = new FuncionFco();
+        $this->funcionFco = new FuncionFco;
     }
 
     public function test_valida_datos_correctos()
@@ -20,7 +20,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Francisco Pérez',
             'email' => 'francisco@ejemplo.com',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -37,7 +37,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Jo',
             'email' => 'juan@ejemplo.com',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -52,7 +52,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Francisco',
             'email' => 'email-invalido',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -66,7 +66,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Francisco',
             'email' => 'francisco@ejemplo.com',
-            'edad' => 15
+            'edad' => 15,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -81,7 +81,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Francisco',
             'email' => 'francisco@ejemplo.com',
-            'edad' => 150
+            'edad' => 150,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -95,7 +95,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => '',
             'email' => 'francisco@ejemplo.com',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -109,7 +109,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Francisco',
             'email' => 'FRANCISCO@EJEMPLO.COM',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -123,7 +123,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => '<script>Francisco</script>',
             'email' => 'francisco@ejemplo.com',
-            'edad' => 25
+            'edad' => 25,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
@@ -137,7 +137,7 @@ class FuncionFcoTest extends TestCase
         $datos = [
             'nombre' => 'Jo',
             'email' => 'email-invalido',
-            'edad' => 10
+            'edad' => 10,
         ];
 
         $resultado = $this->funcionFco->validarDatosUsuario($datos);
