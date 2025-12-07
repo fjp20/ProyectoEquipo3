@@ -1,30 +1,35 @@
-name: Deploy to Azure
+name: Deploy Laravel to Azure
 
 on:
   push:
     branches:
-      - main
+      - main   # Solo se despliega cuando main recibe cambios
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checar código del repo
+        uses: actions/checkout@v3
 
-      - name: Set up PHP
+      - name: Configurar PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, pdo_mysql, xml, zip
 
-      - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader --prefer-dist
+      - name: Instalar dependencias
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
-      - name: Deploy to Azure
-        uses: azure/webapps-deploy@v3
+      # 🔥🔥 IMPORTANTE: nombre EXACTO de tu App Service
+      - name: Deploy a Azure Web App
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: ProyectoEquipo3   # <-- tu nombre EXACTO del App Service
+          app-name: "ProyectoEquipo3"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
+
