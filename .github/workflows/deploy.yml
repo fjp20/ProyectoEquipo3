@@ -3,7 +3,7 @@ name: Deploy Laravel to Azure
 on:
   push:
     branches:
-      - main   # Se despliega solo al actualizar MAIN
+      - main
 
 jobs:
   build-and-deploy:
@@ -25,19 +25,20 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-      # 🔐 LOGIN A AZURE USANDO SERVICE PRINCIPAL
+    
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 📦 Crear ZIP con todo Laravel
-      - name: Empaquetar la app
-        run: zip -r app.zip .
+    
+      - name: Empaquetar app
+        run: |
+          zip -r app.zip . -x ".git/*" -x ".github/*"
 
-      # 🚀 DEPLOY
+      
       - name: Deploy a Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "ProyectoEquipo3"   # Nombre EXACTO del App Service en Azure
+          app-name: "proyectoequipo3-ecb7fyguaxa6bqfn"   # Nombre REAL
           package: app.zip
