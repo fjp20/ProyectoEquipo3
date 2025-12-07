@@ -40,5 +40,5 @@ jobs:
       - name: Deploy a Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "proyectoequipo3-ecb7fyguaxa6bqfn"   # Nombre REAL
+          app-name: "ProyectoEquipo3"   # Nombre REAL
           package: app.zip
