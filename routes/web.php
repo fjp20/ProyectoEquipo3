@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Http\Controllers\DescuentoController;
+use App\Services\FuncionFco;
 use App\Http\Controllers\CuponController;
 use App\Http\Controllers\IdentidadController;
 
@@ -8,7 +11,7 @@ use App\Http\Controllers\IdentidadController;
 // Ruta raíz para que el test pase
 // ----------------------------
 Route::get('/', function () {
-    return view('welcome'); // o puedes devolver un mensaje simple: return 'Hola mundo';
+    return view('welcome'); // o return 'Hola mundo';
 });
 
 // ----------------------------
@@ -27,4 +30,14 @@ Route::get('/validar-rfc', [IdentidadController::class, 'validarRFC']);
 // ----------------------------
 Route::get('/validaciones', function () {
     return view('validaciones');
+});
+
+// Ruta existente del equipo (DescuentoController)
+Route::get('/descuento/{precio}/{tipo?}', [DescuentoController::class, 'aplicarDescuento']);
+
+// Ruta rápida para probar la validación via POST /validar-usuario
+Route::post('/validar-usuario', function (Request $request) {
+    $service = new FuncionFco();
+    $datos = $request->only(['nombre', 'email', 'edad']);
+    return response()->json($service->validarDatosUsuario($datos));
 });
