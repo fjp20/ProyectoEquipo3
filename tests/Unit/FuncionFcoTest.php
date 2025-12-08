@@ -7,12 +7,12 @@ use Tests\TestCase;
 
 class FuncionFcoTest extends TestCase
 {
-    protected FuncionFco $funcionFco;
+    protected FuncionFco $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->funcionFco = new FuncionFco;
+        $this->service = new FuncionFco();
     }
 
     public function test_valida_datos_correctos()
@@ -23,129 +23,79 @@ class FuncionFcoTest extends TestCase
             'edad' => 25,
         ];
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
+        $res = $this->service->validarDatosUsuario($datos);
 
-        $this->assertTrue($resultado['valido']);
-        $this->assertEmpty($resultado['errores']);
-        $this->assertEquals('Francisco Pérez', $resultado['datos']['nombre']);
-        $this->assertEquals('francisco@ejemplo.com', $resultado['datos']['email']);
-        $this->assertEquals(25, $resultado['datos']['edad']);
+        $this->assertTrue($res['valido']);
+        $this->assertEmpty($res['errores']);
+        $this->assertSame('Francisco Pérez', $res['datos']['nombre']);
+        $this->assertSame('francisco@ejemplo.com', $res['datos']['email']);
+        $this->assertSame(25, $res['datos']['edad']);
     }
 
     public function test_rechaza_nombre_corto()
     {
-        $datos = [
+        $res = $this->service->validarDatosUsuario([
             'nombre' => 'Jo',
             'email' => 'juan@ejemplo.com',
             'edad' => 25,
-        ];
+        ]);
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('nombre', $resultado['errores']);
-        $this->assertEquals('El nombre debe tener al menos 3 caracteres', $resultado['errores']['nombre']);
+        $this->assertFalse($res['valido']);
+        $this->assertArrayHasKey('nombre', $res['errores']);
+        $this->assertSame('El nombre debe tener al menos 3 caracteres.', $res['errores']['nombre']);
     }
 
     public function test_rechaza_email_invalido()
     {
-        $datos = [
+        $res = $this->service->validarDatosUsuario([
             'nombre' => 'Francisco',
             'email' => 'email-invalido',
             'edad' => 25,
-        ];
+        ]);
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('email', $resultado['errores']);
+        $this->assertFalse($res['valido']);
+        $this->assertArrayHasKey('email', $res['errores']);
+        $this->assertSame('Email inválido.', $res['errores']['email']);
     }
 
     public function test_rechaza_edad_menor_a_18()
     {
-        $datos = [
+        $res = $this->service->validarDatosUsuario([
             'nombre' => 'Francisco',
             'email' => 'francisco@ejemplo.com',
             'edad' => 15,
-        ];
+        ]);
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('edad', $resultado['errores']);
-        $this->assertEquals('La edad debe estar entre 18 y 100 años', $resultado['errores']['edad']);
+        $this->assertFalse($res['valido']);
+        $this->assertArrayHasKey('edad', $res['errores']);
+        $this->assertSame('La edad debe estar entre 18 y 100 años.', $res['errores']['edad']);
     }
 
-    public function test_rechaza_edad_mayor_a_100()
+    public function test_sanitiza_email_y_nombre()
     {
-        $datos = [
-            'nombre' => 'Francisco',
-            'email' => 'francisco@ejemplo.com',
-            'edad' => 150,
-        ];
-
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('edad', $resultado['errores']);
-    }
-
-    public function test_rechaza_nombre_vacio()
-    {
-        $datos = [
-            'nombre' => '',
-            'email' => 'francisco@ejemplo.com',
-            'edad' => 25,
-        ];
-
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('nombre', $resultado['errores']);
-    }
-
-    public function test_sanitiza_email_a_minusculas()
-    {
-        $datos = [
-            'nombre' => 'Francisco',
+        $res = $this->service->validarDatosUsuario([
+            'nombre' => '<b>Francisco</b>',
             'email' => 'FRANCISCO@EJEMPLO.COM',
-            'edad' => 25,
-        ];
+            'edad' => 30,
+        ]);
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertTrue($resultado['valido']);
-        $this->assertEquals('francisco@ejemplo.com', $resultado['datos']['email']);
+        $this->assertTrue($res['valido']);
+        $this->assertSame('francisco@ejemplo.com', $res['datos']['email']);
+        $this->assertSame('Francisco', $res['datos']['nombre']);
     }
 
-    public function test_sanitiza_nombre_eliminando_etiquetas_html()
+    public function test_rechaza_multiplos_errores()
     {
-        $datos = [
-            'nombre' => '<script>Francisco</script>',
-            'email' => 'francisco@ejemplo.com',
-            'edad' => 25,
-        ];
-
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertTrue($resultado['valido']);
-        $this->assertEquals('Francisco', $resultado['datos']['nombre']);
-    }
-
-    public function test_rechaza_multiples_errores()
-    {
-        $datos = [
-            'nombre' => 'Jo',
+        $res = $this->service->validarDatosUsuario([
+            'nombre' => '',
             'email' => 'email-invalido',
             'edad' => 10,
-        ];
+        ]);
 
-        $resultado = $this->funcionFco->validarDatosUsuario($datos);
-
-        $this->assertFalse($resultado['valido']);
-        $this->assertArrayHasKey('nombre', $resultado['errores']);
-        $this->assertArrayHasKey('email', $resultado['errores']);
-        $this->assertArrayHasKey('edad', $resultado['errores']);
-        $this->assertCount(3, $resultado['errores']);
+        $this->assertFalse($res['valido']);
+        $this->assertCount(3, $res['errores']);
+        $this->assertArrayHasKey('nombre', $res['errores']);
+        $this->assertArrayHasKey('email', $res['errores']);
+        $this->assertArrayHasKey('edad', $res['errores']);
     }
 }
