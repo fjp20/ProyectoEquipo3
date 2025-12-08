@@ -1,4 +1,4 @@
-name: Deploy to Azure
+name: Deploy to Azure Web App
 
 on:
   push:
@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -21,12 +22,11 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --no-dev --optimize-autoloader
 
-    - name: Create ZIP package
-      run: |
-        zip -r app.zip . -x ".git/*"
+    - name: Create ZIP for deployment
+      run: zip -r app.zip . -x ".git/*" ".github/*"
 
     - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v4
+      uses: azure/webapps-deploy@v3
       with:
-        app-name: ProyectoEquipo3   # ← AQUÍ EL NOMBRE DE TU APP
+        app-name: ProyectoEquipo3    # ← El nombre EXACTO de tu Web App
         package: app.zip
