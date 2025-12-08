@@ -5,10 +5,6 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 class IdentidadControllerTest extends TestCase
 {
-    // ----------------------------
-    // CURP Tests
-    // ----------------------------
-
     #[Test]
     public function validar_curp_valida_correctamente_una_curp_valida(): void
     {
@@ -51,10 +47,6 @@ class IdentidadControllerTest extends TestCase
         $response->assertStatus(422)
                  ->assertJsonValidationErrors(['curp']);
     }
-
-    // ----------------------------
-    // RFC Tests
-    // ----------------------------
 
     #[Test]
     public function validar_rfc_valida_correctamente_un_rfc_valido(): void
