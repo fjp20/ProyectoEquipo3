@@ -25,7 +25,7 @@ class FuncionFcoTest extends TestCase
 
         $res = $this->service->validarDatosUsuario($datos);
 
-        $this->assertFalse($res['valido']);
+        $this->assertTrue($res['valido']);
         $this->assertEmpty($res['errores']);
         $this->assertSame('Francisco Pérez', $res['datos']['nombre']);
         $this->assertSame('francisco@ejemplo.com', $res['datos']['email']);
