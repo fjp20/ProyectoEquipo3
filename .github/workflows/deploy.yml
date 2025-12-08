@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App
+name: Deploy Azure
 
 on:
   push:
@@ -10,27 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql
 
-    - name: Install Composer dependencies
-      run: composer install --no-dev --optimize-autoloader
+      - name: Install dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create ZIP for deployment
+        run: |
+          zip -r app.zip . -x "*.git*" "*node_modules*" "*.github*" "*tests*"
 
-    - name: Create ZIP for deployment
-      run: zip -r app.zip . -x ".git/*" ".github/*"
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ProyectoEquipo3
-        package: app.zip
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ProyectoEquipo3
+          slot-name: Production
+          package: app.zip
