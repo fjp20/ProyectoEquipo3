@@ -1,4 +1,4 @@
-name: Deploy Laravel to Azure
+name: Deploy to Azure
 
 on:
   push:
@@ -6,39 +6,27 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-      - name: Configurar PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo, pdo_mysql
 
-      - name: Instalar dependencias
-        run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+    - name: Install Composer dependencies
+      run: composer install --no-dev --optimize-autoloader
 
-      
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Create ZIP package
+      run: |
+        zip -r app.zip . -x ".git/*"
 
-     
-      - name: Empaquetar app
-        run: |
-          zip -r app.zip . -x ".git/*" -x ".github/*"
-
-      
-      - name: Deploy a Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "ProyectoEquipo3"  # EXACTO del App Service
-          package: app.zip
+    - name: Deploy to Azure WebApp
+      uses: azure/webapps-deploy@v4
+      with:
+        app-name: ProyectoEquipo3   # ← AQUÍ EL NOMBRE DE TU APP
+        package: app.zip
