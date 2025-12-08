@@ -25,20 +25,20 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-   
+      
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    
+     
       - name: Empaquetar app
         run: |
           zip -r app.zip . -x ".git/*" -x ".github/*"
 
-   
+      
       - name: Deploy a Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "proyectoequipo3-ecb7fyguaxa6bqfn"   # NOMBRE REAL DEL APP SERVICE
+          app-name: "ProyectoEquipo3"  # EXACTO del App Service
           package: app.zip
