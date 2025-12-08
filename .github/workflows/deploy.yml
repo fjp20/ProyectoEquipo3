@@ -17,10 +17,14 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, intl, pdo, pdo_mysql
 
     - name: Install Composer dependencies
       run: composer install --no-dev --optimize-autoloader
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Create ZIP for deployment
       run: zip -r app.zip . -x ".git/*" ".github/*"
@@ -28,5 +32,5 @@ jobs:
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ProyectoEquipo3    # ← El nombre EXACTO de tu Web App
+        app-name: ProyectoEquipo3
         package: app.zip
